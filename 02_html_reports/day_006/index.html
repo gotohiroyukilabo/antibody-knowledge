@@ -1,0 +1,2081 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Day 006：変性・Tm・凝集。抗体の安定性を、図とインタラクティブな温度チャートで学ぶ30分教材。">
+  <meta name="theme-color" content="#102a43">
+  <title>Day 006｜変性・Tm・凝集</title>
+  <style>
+    :root {
+      --ink: #102a43;
+      --ink-soft: #334e68;
+      --paper: #f8f5ed;
+      --paper-deep: #eee9dc;
+      --surface: #fffdf8;
+      --line: #d9d2c3;
+      --teal: #087e8b;
+      --teal-light: #d7eff0;
+      --coral: #e56b5d;
+      --coral-light: #fbe3dd;
+      --gold: #f2b84b;
+      --gold-light: #fff0c9;
+      --violet: #7057a3;
+      --violet-light: #ebe5f5;
+      --green: #3b846b;
+      --green-light: #e1f0e9;
+      --shadow: 0 18px 50px rgba(16, 42, 67, 0.09);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
+      --content: 1120px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 86px;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 4%, rgba(8, 126, 139, 0.08), transparent 25rem),
+        radial-gradient(circle at 92% 28%, rgba(229, 107, 93, 0.07), transparent 27rem),
+        var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+      line-height: 1.85;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: var(--teal);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
+    }
+
+    a:hover { color: #055d67; }
+
+    button, input { font: inherit; }
+
+    .progress-track {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 100;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--coral));
+      transition: width 80ms linear;
+    }
+
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      border-bottom: 1px solid rgba(217, 210, 195, 0.9);
+      background: rgba(248, 245, 237, 0.91);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-inner {
+      width: min(calc(100% - 32px), var(--content));
+      min-height: 68px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--ink);
+      font-weight: 800;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 35px;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--ink);
+      font-size: 0.75rem;
+      letter-spacing: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 19px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav-links::-webkit-scrollbar { display: none; }
+
+    .nav-links a {
+      color: var(--ink-soft);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .nav-links a:hover { color: var(--teal); }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 78px 0 68px;
+      color: white;
+      background: var(--ink);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+
+    .hero::before {
+      width: 560px;
+      height: 560px;
+      right: -250px;
+      top: -210px;
+      box-shadow: 0 0 0 80px rgba(255, 255, 255, 0.025), 0 0 0 160px rgba(255, 255, 255, 0.018);
+    }
+
+    .hero::after {
+      width: 270px;
+      height: 270px;
+      left: -130px;
+      bottom: -180px;
+      box-shadow: 0 0 0 60px rgba(8, 126, 139, 0.12);
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      width: min(calc(100% - 40px), var(--content));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
+      gap: 72px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 22px;
+      color: #a9e0e3;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: var(--gold);
+    }
+
+    h1, h2, h3, p { overflow-wrap: anywhere; }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+      font-size: clamp(2.7rem, 6vw, 5.4rem);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+    }
+
+    h1 .amp {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .hero-lead {
+      max-width: 680px;
+      margin: 25px 0 0;
+      color: #d9e4ec;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.9;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .meta-pill {
+      padding: 7px 13px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      color: #d9e4ec;
+      background: rgba(255, 255, 255, 0.07);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 430px;
+      display: grid;
+      place-items: center;
+    }
+
+    .orbit {
+      position: absolute;
+      width: 390px;
+      max-width: 96%;
+      aspect-ratio: 1;
+      border: 1px dashed rgba(169, 224, 227, 0.3);
+      border-radius: 50%;
+      animation: rotate 40s linear infinite;
+    }
+
+    .orbit::before,
+    .orbit::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 7px rgba(242, 184, 75, 0.12);
+    }
+
+    .orbit::before { top: 40px; left: 55px; }
+    .orbit::after { right: 9px; bottom: 115px; background: var(--coral); }
+
+    @keyframes rotate { to { transform: rotate(360deg); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .orbit { animation: none; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+    }
+
+    .antibody-wrap {
+      position: relative;
+      width: 235px;
+      height: 260px;
+      filter: drop-shadow(0 24px 30px rgba(0, 0, 0, 0.25));
+    }
+
+    .ab-segment {
+      position: absolute;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #8bd2d7, #d7eff0);
+    }
+
+    .ab-arm {
+      top: 46px;
+      width: 28px;
+      height: 132px;
+      transform-origin: 50% 100%;
+    }
+
+    .ab-arm.left { left: 75px; transform: rotate(42deg); }
+    .ab-arm.right { right: 75px; transform: rotate(-42deg); }
+
+    .ab-tip {
+      position: absolute;
+      top: 15px;
+      width: 38px;
+      height: 74px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--gold), #ffd985);
+    }
+
+    .ab-tip.left { left: 27px; transform: rotate(42deg); }
+    .ab-tip.right { right: 27px; transform: rotate(-42deg); }
+
+    .ab-hinge {
+      position: absolute;
+      top: 143px;
+      left: 50%;
+      width: 54px;
+      height: 30px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: #73c1c8;
+    }
+
+    .ab-stem {
+      left: calc(50% - 17px);
+      bottom: 7px;
+      width: 34px;
+      height: 106px;
+      background: linear-gradient(90deg, #64b6bf, #bce4e6);
+    }
+
+    .heat-wave {
+      position: absolute;
+      right: 10px;
+      bottom: 27px;
+      display: flex;
+      gap: 7px;
+      align-items: end;
+    }
+
+    .heat-wave span {
+      display: block;
+      width: 5px;
+      height: 46px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, transparent, var(--coral));
+      transform: skewX(-10deg);
+    }
+
+    .heat-wave span:nth-child(2) { height: 66px; opacity: 0.8; }
+    .heat-wave span:nth-child(3) { height: 38px; opacity: 0.6; }
+
+    .visual-label {
+      position: absolute;
+      z-index: 2;
+      padding: 8px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      color: #eaf3f6;
+      background: rgba(16, 42, 67, 0.78);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+      font-size: 0.74rem;
+      font-weight: 800;
+      backdrop-filter: blur(8px);
+    }
+
+    .visual-label.one { top: 42px; right: 0; }
+    .visual-label.two { left: 0; bottom: 82px; }
+    .visual-label.three { right: 26px; bottom: 18px; }
+
+    main { display: block; }
+
+    .section {
+      width: min(calc(100% - 40px), var(--content));
+      margin: 0 auto;
+      padding: 92px 0;
+    }
+
+    .section + .section { border-top: 1px solid var(--line); }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: 0.4fr 1fr;
+      gap: 44px;
+      align-items: start;
+      margin-bottom: 42px;
+    }
+
+    .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0 0;
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .section-kicker::before {
+      content: attr(data-number);
+      display: grid;
+      width: 34px;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--teal);
+      letter-spacing: 0;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 1.3;
+      letter-spacing: -0.025em;
+    }
+
+    .section-intro {
+      max-width: 760px;
+      margin: -17px 0 42px auto;
+      color: var(--ink-soft);
+      font-size: 1.05rem;
+    }
+
+    .question-card {
+      position: relative;
+      overflow: hidden;
+      padding: 40px 44px;
+      border: 1px solid #c8e1e3;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, #e9f5f4, #fffdf8 70%);
+      box-shadow: var(--shadow);
+    }
+
+    .question-card::after {
+      content: "?";
+      position: absolute;
+      right: 28px;
+      bottom: -55px;
+      color: rgba(8, 126, 139, 0.09);
+      font-family: Georgia, serif;
+      font-size: 13rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .question-label {
+      display: inline-block;
+      margin-bottom: 12px;
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+    }
+
+    .question-card p {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: clamp(1.25rem, 2.6vw, 1.8rem);
+      font-weight: 700;
+      line-height: 1.75;
+    }
+
+    .answer-banner {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 24px;
+      align-items: center;
+      margin-top: 24px;
+      padding: 26px 30px;
+      border-radius: var(--radius-md);
+      color: white;
+      background: var(--ink);
+    }
+
+    .answer-badge {
+      display: grid;
+      width: 76px;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--ink);
+      background: var(--gold);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.09em;
+    }
+
+    .answer-banner strong {
+      display: block;
+      color: white;
+      font-size: clamp(1.05rem, 2.1vw, 1.35rem);
+      line-height: 1.65;
+    }
+
+    .answer-banner span {
+      display: block;
+      margin-top: 3px;
+      color: #bcccdc;
+      font-size: 0.88rem;
+    }
+
+    .lens-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .lens-card {
+      position: relative;
+      min-height: 275px;
+      padding: 26px 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: 0 9px 30px rgba(16, 42, 67, 0.045);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .lens-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+    }
+
+    .lens-index {
+      display: grid;
+      width: 48px;
+      aspect-ratio: 1;
+      place-items: center;
+      margin-bottom: 25px;
+      border-radius: 15px;
+      font-family: Georgia, serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .lens-card:nth-child(1) .lens-index { color: var(--teal); background: var(--teal-light); }
+    .lens-card:nth-child(2) .lens-index { color: var(--coral); background: var(--coral-light); }
+    .lens-card:nth-child(3) .lens-index { color: #91600b; background: var(--gold-light); }
+    .lens-card:nth-child(4) .lens-index { color: var(--violet); background: var(--violet-light); }
+
+    .lens-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+      line-height: 1.55;
+    }
+
+    .lens-card .english {
+      display: block;
+      margin-bottom: 13px;
+      color: #829ab1;
+      font-family: Georgia, serif;
+      font-size: 0.75rem;
+      font-style: italic;
+    }
+
+    .lens-card p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 0.91rem;
+      line-height: 1.8;
+    }
+
+    .context-note {
+      margin: 26px 0 0;
+      padding: 18px 22px;
+      border-left: 4px solid var(--gold);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      background: rgba(255, 240, 201, 0.55);
+      color: var(--ink-soft);
+    }
+
+    .context-note strong { color: var(--ink); }
+
+    .pathway-shell {
+      padding: 40px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .pathway {
+      display: grid;
+      grid-template-columns: 1fr 86px 1fr 86px 1fr;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .state {
+      min-height: 210px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 22px 18px;
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+
+    .state.native { background: var(--teal-light); }
+    .state.intermediate { background: var(--gold-light); }
+    .state.aggregate { background: var(--coral-light); }
+
+    .state-shape {
+      position: relative;
+      width: 84px;
+      height: 84px;
+      margin-bottom: 14px;
+    }
+
+    .folded-protein span,
+    .exposed-protein span,
+    .aggregate-protein span {
+      position: absolute;
+      display: block;
+      border-radius: 50%;
+    }
+
+    .folded-protein span { background: var(--teal); }
+    .folded-protein span:nth-child(1) { width: 52px; height: 43px; left: 16px; top: 8px; transform: rotate(16deg); }
+    .folded-protein span:nth-child(2) { width: 43px; height: 48px; left: 7px; top: 30px; background: #42a5ad; }
+    .folded-protein span:nth-child(3) { width: 42px; height: 40px; right: 4px; bottom: 5px; background: #126e78; }
+
+    .exposed-protein span { background: var(--gold); }
+    .exposed-protein span:nth-child(1) { width: 42px; height: 31px; left: 4px; top: 4px; transform: rotate(-20deg); }
+    .exposed-protein span:nth-child(2) { width: 32px; height: 55px; left: 26px; top: 22px; transform: rotate(30deg); background: #ef9e2d; }
+    .exposed-protein span:nth-child(3) { width: 35px; height: 28px; right: 1px; bottom: 7px; background: var(--coral); }
+    .exposed-protein span:nth-child(4) { width: 12px; height: 12px; right: 4px; top: 13px; background: var(--coral); box-shadow: 0 0 0 5px rgba(229, 107, 93, 0.18); }
+
+    .aggregate-protein span { width: 39px; height: 39px; background: var(--coral); border: 4px solid rgba(255, 255, 255, 0.45); }
+    .aggregate-protein span:nth-child(1) { left: 4px; top: 5px; }
+    .aggregate-protein span:nth-child(2) { right: 4px; top: 10px; background: #d95749; }
+    .aggregate-protein span:nth-child(3) { left: 14px; bottom: 1px; background: #ee8a78; }
+    .aggregate-protein span:nth-child(4) { right: 12px; bottom: 1px; }
+
+    .state-code {
+      color: rgba(16, 42, 67, 0.5);
+      font-family: Georgia, serif;
+      font-size: 0.85rem;
+      font-style: italic;
+      font-weight: 700;
+    }
+
+    .state h3 { margin: 3px 0 4px; font-size: 1.08rem; }
+    .state p { margin: 0; color: var(--ink-soft); font-size: 0.82rem; line-height: 1.65; }
+
+    .path-arrow {
+      position: relative;
+      height: 2px;
+      background: var(--ink-soft);
+    }
+
+    .path-arrow::after {
+      content: "";
+      position: absolute;
+      right: -1px;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      border-top: 2px solid var(--ink-soft);
+      border-right: 2px solid var(--ink-soft);
+      transform: translateY(-50%) rotate(45deg);
+    }
+
+    .path-arrow span {
+      position: absolute;
+      left: 50%;
+      bottom: 10px;
+      width: 100px;
+      transform: translateX(-50%);
+      color: var(--ink-soft);
+      font-size: 0.69rem;
+      font-weight: 800;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .alternate-paths {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .alternate-paths div {
+      padding: 15px 17px;
+      border: 1px dashed #b7c7d3;
+      border-radius: var(--radius-sm);
+      color: var(--ink-soft);
+      font-size: 0.81rem;
+      line-height: 1.6;
+    }
+
+    .alternate-paths strong { color: var(--ink); }
+
+    .distinction {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 24px;
+      align-items: center;
+      margin-top: 28px;
+    }
+
+    .term-card {
+      min-height: 170px;
+      padding: 25px;
+      border-radius: var(--radius-md);
+    }
+
+    .term-card.denaturation { border: 1px solid #bedfe1; background: rgba(215, 239, 240, 0.62); }
+    .term-card.aggregation { border: 1px solid #f0c5bc; background: rgba(251, 227, 221, 0.62); }
+    .term-card h3 { margin: 0 0 8px; }
+    .term-card p { margin: 0; color: var(--ink-soft); font-size: 0.92rem; }
+
+    .not-equal {
+      display: grid;
+      width: 70px;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--ink);
+      font-family: Georgia, serif;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .lab {
+      padding: 38px;
+      border-radius: var(--radius-lg);
+      color: white;
+      background: var(--ink);
+      box-shadow: 0 24px 60px rgba(16, 42, 67, 0.17);
+    }
+
+    .lab-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 28px;
+      align-items: start;
+      margin-bottom: 30px;
+    }
+
+    .lab-header h3 {
+      margin: 0 0 8px;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: clamp(1.45rem, 3vw, 2.1rem);
+    }
+
+    .lab-header p { margin: 0; color: #bcccdc; font-size: 0.9rem; }
+
+    .mode-label {
+      padding: 7px 11px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      color: #a9e0e3;
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 0.72rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(240px, 0.43fr) minmax(0, 1fr);
+      gap: 30px;
+      align-items: stretch;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .control label {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 8px;
+      color: #eaf3f6;
+      font-size: 0.84rem;
+      font-weight: 800;
+    }
+
+    .control output { color: var(--gold); }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+
+    .control-note {
+      color: #9fb3c8;
+      font-size: 0.73rem;
+      line-height: 1.55;
+    }
+
+    .lab-conclusion {
+      margin-top: auto;
+      padding: 15px 16px;
+      border-left: 3px solid var(--gold);
+      border-radius: 0 9px 9px 0;
+      color: #d9e4ec;
+      background: rgba(242, 184, 75, 0.08);
+      font-size: 0.83rem;
+      line-height: 1.7;
+    }
+
+    .canvas-shell {
+      position: relative;
+      min-height: 400px;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      background: #fdfcf8;
+    }
+
+    #stability-chart {
+      display: block;
+      width: 100%;
+      height: 372px;
+    }
+
+    .canvas-shell figcaption {
+      position: absolute;
+      left: 24px;
+      bottom: 17px;
+      color: #627d98;
+      font-size: 0.7rem;
+    }
+
+    .metric-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .metric {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+    }
+
+    .metric small {
+      display: block;
+      margin-bottom: 8px;
+      color: #829ab1;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .metric h3 { margin: 0 0 9px; font-size: 1.3rem; }
+    .metric p { margin: 0; color: var(--ink-soft); font-size: 0.9rem; }
+    .metric.tm { border-top: 5px solid var(--teal); }
+    .metric.tagg { border-top: 5px solid var(--coral); }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .method-button {
+      min-height: 112px;
+      padding: 16px 11px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--ink-soft);
+      background: var(--surface);
+      cursor: pointer;
+      transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+    }
+
+    .method-button:hover { transform: translateY(-3px); border-color: #9fb3c8; }
+
+    .method-button[aria-selected="true"] {
+      border-color: var(--teal);
+      color: var(--ink);
+      background: var(--teal-light);
+      box-shadow: inset 0 0 0 1px var(--teal);
+    }
+
+    .method-button strong {
+      display: block;
+      color: inherit;
+      font-family: Georgia, serif;
+      font-size: 1.2rem;
+    }
+
+    .method-button span { font-size: 0.72rem; font-weight: 700; }
+
+    .method-panel {
+      min-height: 260px;
+      display: grid;
+      grid-template-columns: minmax(250px, 0.45fr) 1fr;
+      gap: 35px;
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .method-visual {
+      position: relative;
+      min-height: 190px;
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      background: var(--paper-deep);
+    }
+
+    .method-visual::before {
+      content: "";
+      position: absolute;
+      width: 135px;
+      height: 135px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 18px solid var(--teal);
+      border-top-color: var(--gold);
+      border-right-color: var(--coral);
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 14px rgba(255, 255, 255, 0.65), 0 15px 25px rgba(16, 42, 67, 0.12);
+    }
+
+    .method-visual::after {
+      content: attr(data-mark);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--ink);
+      font-family: Georgia, serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+    }
+
+    .method-copy .overline {
+      color: var(--teal);
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.13em;
+    }
+
+    .method-copy h3 { margin: 5px 0 10px; font-size: 1.45rem; }
+    .method-copy p { margin: 0 0 17px; color: var(--ink-soft); }
+
+    .method-facts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .method-facts div {
+      padding: 13px 15px;
+      border-radius: 10px;
+      background: var(--paper);
+      color: var(--ink-soft);
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+
+    .method-facts strong { display: block; color: var(--ink); }
+
+    .comparison-wrap {
+      margin-top: 34px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th, td {
+      padding: 17px 18px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 0.85rem;
+      line-height: 1.65;
+    }
+
+    th {
+      color: white;
+      background: var(--ink);
+      font-size: 0.76rem;
+      letter-spacing: 0.04em;
+    }
+
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:nth-child(even) { background: rgba(238, 233, 220, 0.38); }
+    td:first-child { color: var(--ink); font-weight: 800; }
+
+    .definition-builder {
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 30px;
+      align-items: stretch;
+    }
+
+    .definition-formula {
+      padding: 34px;
+      border-radius: var(--radius-lg);
+      color: white;
+      background: var(--ink);
+    }
+
+    .definition-formula h3 {
+      margin: 0 0 18px;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: 1.6rem;
+    }
+
+    .formula-stack { display: flex; flex-direction: column; gap: 10px; }
+
+    .formula-item {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 11px;
+      align-items: center;
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 11px;
+      color: #d9e4ec;
+      background: rgba(255, 255, 255, 0.055);
+      font-size: 0.85rem;
+    }
+
+    .formula-item span:first-child {
+      display: grid;
+      width: 28px;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--ink);
+      background: var(--gold);
+      font-size: 0.72rem;
+      font-weight: 900;
+    }
+
+    .definition-example {
+      display: flex;
+      flex-direction: column;
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .definition-example .overline {
+      color: var(--coral);
+      font-size: 0.74rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+    }
+
+    .definition-example blockquote {
+      margin: 14px 0 22px;
+      padding: 0;
+      border: 0;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: clamp(1.1rem, 2.3vw, 1.45rem);
+      font-weight: 700;
+      line-height: 1.8;
+    }
+
+    .evidence-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .evidence-chips span {
+      padding: 7px 11px;
+      border-radius: 999px;
+      color: var(--ink-soft);
+      background: var(--paper-deep);
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .reading-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      counter-reset: reading;
+    }
+
+    .reading-card {
+      position: relative;
+      padding: 24px 19px 21px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      counter-increment: reading;
+    }
+
+    .reading-card::before {
+      content: "0" counter(reading);
+      display: block;
+      margin-bottom: 20px;
+      color: var(--teal);
+      font-family: Georgia, serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .reading-card h3 { margin: 0 0 8px; font-size: 0.97rem; }
+    .reading-card p { margin: 0; color: var(--ink-soft); font-size: 0.79rem; line-height: 1.7; }
+
+    .ai-shell {
+      display: grid;
+      grid-template-columns: 0.88fr 1.12fr;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .ai-copy {
+      padding: 42px;
+      color: white;
+      background: var(--violet);
+    }
+
+    .ai-copy .section-kicker { color: #e3d8f6; }
+    .ai-copy .section-kicker::before { background: white; color: var(--violet); }
+    .ai-copy h2 {
+      margin: 20px 0 18px;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: clamp(1.8rem, 3.8vw, 2.8rem);
+      line-height: 1.35;
+    }
+    .ai-copy p { margin: 0; color: #eee8f7; font-size: 0.93rem; }
+
+    .ai-schema {
+      padding: 42px;
+      background: #f1edf8;
+    }
+
+    .schema-row {
+      display: grid;
+      grid-template-columns: 108px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 15px 0;
+      border-bottom: 1px solid #d8cfea;
+    }
+
+    .schema-row:first-child { padding-top: 0; }
+    .schema-row:last-child { padding-bottom: 0; border-bottom: 0; }
+
+    .schema-row dt {
+      margin: 0;
+      color: var(--violet);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .schema-row dd { margin: 0; color: var(--ink-soft); font-size: 0.84rem; line-height: 1.65; }
+
+    .ai-warning {
+      margin-top: 25px;
+      padding: 17px 19px;
+      border-left: 4px solid var(--coral);
+      border-radius: 0 12px 12px 0;
+      background: white;
+      color: var(--ink-soft);
+      font-size: 0.82rem;
+      line-height: 1.7;
+    }
+
+    .ai-warning strong { color: var(--ink); }
+
+    .glossary {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 13px;
+    }
+
+    .term {
+      display: grid;
+      grid-template-columns: 126px 1fr;
+      gap: 18px;
+      padding: 19px 21px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+    }
+
+    .term dt { color: var(--teal); font-weight: 900; }
+    .term dd { margin: 0; color: var(--ink-soft); font-size: 0.84rem; }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    details.quiz {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      box-shadow: 0 10px 28px rgba(16, 42, 67, 0.05);
+    }
+
+    details.quiz summary {
+      position: relative;
+      min-height: 210px;
+      padding: 28px 54px 28px 28px;
+      list-style: none;
+      cursor: pointer;
+    }
+
+    details.quiz summary::-webkit-details-marker { display: none; }
+
+    details.quiz summary::after {
+      content: "+";
+      position: absolute;
+      right: 22px;
+      top: 25px;
+      display: grid;
+      width: 31px;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--teal);
+      font-size: 1.25rem;
+      font-weight: 400;
+    }
+
+    details.quiz[open] summary::after { content: "−"; }
+
+    .quiz-number {
+      display: block;
+      margin-bottom: 19px;
+      color: var(--coral);
+      font-family: Georgia, serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+    }
+
+    details.quiz summary strong { font-size: 1.02rem; line-height: 1.8; }
+
+    .quiz-answer {
+      padding: 24px 28px 28px;
+      border-top: 1px solid var(--line);
+      color: var(--ink-soft);
+      background: var(--teal-light);
+      font-size: 0.91rem;
+    }
+
+    .quiz-answer strong { color: var(--teal); }
+
+    .takeaway {
+      padding: 48px;
+      border-radius: var(--radius-lg);
+      color: white;
+      background: var(--ink);
+      box-shadow: var(--shadow);
+    }
+
+    .takeaway h2 {
+      margin: 0 0 28px;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+    }
+
+    .three-lines {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .three-lines div {
+      padding: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: var(--radius-md);
+      color: #d9e4ec;
+      background: rgba(255, 255, 255, 0.055);
+      font-size: 0.9rem;
+    }
+
+    .three-lines span {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--gold);
+      font-family: Georgia, serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+
+    .open-question {
+      margin-top: 22px;
+      padding: 22px 24px;
+      border-left: 4px solid var(--coral);
+      border-radius: 0 12px 12px 0;
+      background: rgba(229, 107, 93, 0.1);
+    }
+
+    .open-question small { color: #f4b6aa; font-weight: 900; letter-spacing: 0.12em; }
+    .open-question p { margin: 7px 0 0; color: white; }
+
+    .references {
+      margin: 0;
+      padding-left: 1.4rem;
+    }
+
+    .references li {
+      margin-bottom: 13px;
+      padding-left: 8px;
+      color: var(--ink-soft);
+      font-size: 0.85rem;
+    }
+
+    .references em { color: var(--ink); }
+
+    .footer {
+      padding: 36px 20px;
+      color: #bcccdc;
+      background: #0a2034;
+      text-align: center;
+    }
+
+    .footer p { margin: 0; font-size: 0.78rem; }
+    .footer a { color: #a9e0e3; }
+
+    .back-to-top {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 80;
+      display: grid;
+      width: 44px;
+      aspect-ratio: 1;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      color: white;
+      background: var(--teal);
+      box-shadow: 0 8px 24px rgba(16, 42, 67, 0.22);
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 150ms ease, transform 150ms ease;
+    }
+
+    .back-to-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+    @media (max-width: 980px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 22px; }
+      .hero-visual { min-height: 350px; }
+      .lens-grid { grid-template-columns: repeat(2, 1fr); }
+      .pathway { grid-template-columns: 1fr 55px 1fr 55px 1fr; }
+      .pathway-shell { padding: 28px 20px; }
+      .state { min-height: 185px; padding: 18px 9px; }
+      .lab-grid, .definition-builder, .ai-shell { grid-template-columns: 1fr; }
+      .reading-grid { grid-template-columns: repeat(3, 1fr); }
+      .method-grid { grid-template-columns: repeat(3, 1fr); }
+      .three-lines { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      body { line-height: 1.75; }
+      .nav-inner { width: min(calc(100% - 24px), var(--content)); }
+      .brand span:last-child { display: none; }
+      .nav-links { gap: 14px; }
+      .nav-links a { font-size: 0.74rem; }
+      .hero { padding: 58px 0 42px; }
+      .hero-inner, .section { width: min(calc(100% - 28px), var(--content)); }
+      .hero-visual { min-height: 310px; transform: scale(0.88); margin: -15px 0; }
+      .section { padding: 68px 0; }
+      .section-heading { grid-template-columns: 1fr; gap: 15px; margin-bottom: 30px; }
+      .section-intro { margin: -5px 0 30px; }
+      .question-card { padding: 28px 24px; }
+      .answer-banner { grid-template-columns: 1fr; }
+      .answer-badge { width: 56px; }
+      .lens-grid { grid-template-columns: 1fr; }
+      .lens-card { min-height: auto; }
+      .pathway { grid-template-columns: 1fr; gap: 0; }
+      .path-arrow { width: 2px; height: 55px; margin: 3px auto; }
+      .path-arrow::after { right: auto; left: 50%; top: auto; bottom: 0; transform: translateX(-50%) rotate(135deg); }
+      .path-arrow span { left: 14px; bottom: 17px; transform: none; text-align: left; }
+      .alternate-paths { grid-template-columns: 1fr; }
+      .distinction { grid-template-columns: 1fr; }
+      .not-equal { width: 52px; margin: 0 auto; }
+      .lab { padding: 25px 18px; }
+      .lab-header { flex-direction: column; }
+      .canvas-shell { min-height: 330px; padding: 7px; }
+      #stability-chart { height: 310px; }
+      .metric-pair, .quiz-grid { grid-template-columns: 1fr; }
+      .method-grid { grid-template-columns: repeat(2, 1fr); }
+      .method-panel { grid-template-columns: 1fr; padding: 23px; }
+      .method-visual { min-height: 165px; }
+      .reading-grid { grid-template-columns: 1fr; }
+      .ai-copy, .ai-schema { padding: 30px 24px; }
+      .schema-row { grid-template-columns: 1fr; gap: 5px; }
+      .glossary { grid-template-columns: 1fr; }
+      .term { grid-template-columns: 1fr; gap: 5px; }
+      .takeaway { padding: 32px 24px; }
+    }
+
+    @media print {
+      :root { --paper: white; --surface: white; }
+      body { background: white; font-size: 10.5pt; }
+      .site-nav, .progress-track, .back-to-top, .controls { display: none !important; }
+      .hero { color: var(--ink); background: white; border-bottom: 2px solid var(--ink); }
+      .hero-lead, .meta-pill { color: var(--ink-soft); }
+      .hero-visual { display: none; }
+      .hero-inner { grid-template-columns: 1fr; }
+      .section { padding: 36px 0; break-inside: avoid; }
+      .section + .section { border-top: 1px solid #aaa; }
+      .lab, .takeaway, .definition-formula, .ai-copy { color: var(--ink); background: white; border: 1px solid var(--ink); }
+      .lab p, .takeaway p, .ai-copy p, .three-lines div, .formula-item { color: var(--ink-soft); }
+      a { color: var(--ink); }
+      details.quiz { break-inside: avoid; }
+      details.quiz .quiz-answer { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+
+  <nav class="site-nav" aria-label="ページ内ナビゲーション">
+    <div class="nav-inner">
+      <a class="brand" href="#top">
+        <span class="brand-mark">D06</span>
+        <span>抗体工学・30分ラーニング</span>
+      </a>
+      <div class="nav-links">
+        <a href="#stability">安定性</a>
+        <a href="#pathway">変性と凝集</a>
+        <a href="#temperature">Tm / Tagg</a>
+        <a href="#methods">測定法</a>
+        <a href="#ai">抗体×AI</a>
+        <a href="#quiz">確認問題</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="hero-inner">
+      <div>
+        <p class="eyebrow">Antibody Engineering · Day 006</p>
+        <h1>変性・Tm<br><span class="amp">&amp;</span> 凝集</h1>
+        <p class="hero-lead">「Tmが高い抗体は、医薬品として安定」と言い切れる？<br>似て見える現象を切り分け、測定値を正しく読むためのビジュアルガイド。</p>
+        <div class="hero-meta" aria-label="教材情報">
+          <span class="meta-pill">学習時間 30分</span>
+          <span class="meta-pill">構造安定性</span>
+          <span class="meta-pill">コロイド安定性</span>
+          <span class="meta-pill">Developability</span>
+        </div>
+      </div>
+
+      <div class="hero-visual" role="img" aria-label="熱ストレスを受けるY字型の抗体を表した模式図">
+        <div class="orbit" aria-hidden="true"></div>
+        <div class="antibody-wrap" aria-hidden="true">
+          <span class="ab-segment ab-arm left"></span>
+          <span class="ab-segment ab-arm right"></span>
+          <span class="ab-tip left"></span>
+          <span class="ab-tip right"></span>
+          <span class="ab-hinge"></span>
+          <span class="ab-segment ab-stem"></span>
+          <span class="heat-wave"><span></span><span></span><span></span></span>
+        </div>
+        <span class="visual-label one">構造は保たれる？</span>
+        <span class="visual-label two">分子同士は集まらない？</span>
+        <span class="visual-label three">機能は残る？</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section" aria-labelledby="question-title">
+      <div class="question-card">
+        <span class="question-label">TODAY'S QUESTION</span>
+        <p id="question-title">抗体のTmが高ければ、その抗体は保存中も凝集せず、医薬品として「安定」と言い切れるのだろうか？</p>
+      </div>
+      <div class="answer-banner">
+        <span class="answer-badge">結論</span>
+        <div>
+          <strong>言い切れない。Tmは「熱による構造転移」の指標であり、凝集・化学変化・機能・長期保存性のすべてを代表しない。</strong>
+          <span>「何に対して・どの条件で・どれほどの時間」安定なのかを分けて考える。</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="stability" aria-labelledby="stability-title">
+      <div class="section-heading">
+        <p class="section-kicker" data-number="1">Four lenses</p>
+        <h2 id="stability-title">「安定性」は、<br>一つの性質ではない</h2>
+      </div>
+      <p class="section-intro">同じ抗体でも「熱には強いが酸化されやすい」「希薄溶液では単量体だが、高濃度では自己会合する」が起こりえます。まず、安定性を4つのレンズに分解します。</p>
+
+      <div class="lens-grid">
+        <article class="lens-card">
+          <span class="lens-index">01</span>
+          <h3>構造安定性</h3>
+          <span class="english">Conformational stability</span>
+          <p>抗体が天然の立体構造を保つ力。TmやTonsetは、この側面を熱ストレス下で観察する代表的な指標です。</p>
+        </article>
+        <article class="lens-card">
+          <span class="lens-index">02</span>
+          <h3>コロイド安定性</h3>
+          <span class="english">Colloidal stability</span>
+          <p>分子同士が引き合い、自己会合・凝集しにくい性質。濃度、pH、塩、添加剤の影響を強く受けます。</p>
+        </article>
+        <article class="lens-card">
+          <span class="lens-index">03</span>
+          <h3>化学安定性</h3>
+          <span class="english">Chemical stability</span>
+          <p>酸化、脱アミド化、異性化、切断などを受けにくい性質。立体構造が保たれていても変化しえます。</p>
+        </article>
+        <article class="lens-card">
+          <span class="lens-index">04</span>
+          <h3>機能安定性</h3>
+          <span class="english">Functional stability</span>
+          <p>保存やストレスの後にも、抗原結合や細胞活性が許容範囲に残るかという製品機能の視点です。</p>
+        </article>
+      </div>
+
+      <p class="context-note"><strong>医薬品としての最終判断：</strong>規定した容器・製剤・保存条件・期間において、品質と活性が許容範囲にあるか。候補比較のストレス試験と、有効期間を支える実時間・実保存条件のデータは役割が異なります。</p>
+    </section>
+
+    <section class="section" id="pathway" aria-labelledby="pathway-title">
+      <div class="section-heading">
+        <p class="section-kicker" data-number="2">Molecular pathway</p>
+        <h2 id="pathway-title">変性は「形を失う」<br>凝集は「分子が集まる」</h2>
+      </div>
+      <p class="section-intro">部分変性で内部の疎水面が露出すると、別分子と接触しやすくなります。ただし、これが凝集の唯一の経路ではありません。</p>
+
+      <div class="pathway-shell">
+        <div class="pathway" aria-label="天然状態から部分変性状態を経て凝集体になる代表的経路">
+          <article class="state native">
+            <div class="state-shape folded-protein" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="state-code">N · Native</span>
+            <h3>天然状態</h3>
+            <p>疎水面の多くが内部に収納され、機能可能な構造集団にある</p>
+          </article>
+          <div class="path-arrow" aria-hidden="true"><span>熱・pH・界面</span></div>
+          <article class="state intermediate">
+            <div class="state-shape exposed-protein" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+            <span class="state-code">I · Intermediate</span>
+            <h3>部分変性状態</h3>
+            <p>構造の一部が崩れ、通常は隠れている疎水面が露出する</p>
+          </article>
+          <div class="path-arrow" aria-hidden="true"><span>核形成・成長</span></div>
+          <article class="state aggregate">
+            <div class="state-shape aggregate-protein" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+            <span class="state-code">Aggregate</span>
+            <h3>凝集体</h3>
+            <p>二量体、可溶性高分子種、サブビジブル粒子、可視粒子へ</p>
+          </article>
+        </div>
+
+        <div class="alternate-paths" aria-label="凝集に至る別の経路">
+          <div><strong>可逆的自己会合</strong><br>大きく変性しなくても、天然構造のまま分子同士が会合する。</div>
+          <div><strong>界面誘起</strong><br>気液界面・容器表面・撹拌などを起点に構造変化と凝集が進む。</div>
+          <div><strong>化学修飾・架橋</strong><br>酸化などの変化が新しい相互作用や共有結合性の会合を促す。</div>
+        </div>
+      </div>
+
+      <div class="distinction">
+        <article class="term-card denaturation">
+          <h3>変性 <small>denaturation</small></h3>
+          <p>一次構造を必ずしも切断せず、天然状態を支える高次構造が崩れ、機能可能な構造集団から外れる<strong>過程</strong>。</p>
+        </article>
+        <span class="not-equal" aria-label="同じではない">≠</span>
+        <article class="term-card aggregation">
+          <h3>凝集 <small>aggregation</small></h3>
+          <p>2分子以上が非共有結合または共有結合で会合し、さまざまな大きさの分子種・粒子を生じる<strong>現象</strong>。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="temperature" aria-labelledby="temperature-title">
+      <div class="section-heading">
+        <p class="section-kicker" data-number="3">Thermal signals</p>
+        <h2 id="temperature-title">TmとTaggは、<br>違うシグナルを見ている</h2>
+      </div>
+      <p class="section-intro">下の模式チャートで2つの温度を動かしてみてください。どちらが先でも起こりえます。値の大小だけでなく、何を測った温度なのかが重要です。</p>
+
+      <div class="lab">
+        <div class="lab-header">
+          <div>
+            <h3>温度シグナル・ラボ</h3>
+            <p>TmとTaggを独立に動かす模式シミュレーション</p>
+          </div>
+          <span class="mode-label">ILLUSTRATIVE · 模式例</span>
+        </div>
+
+        <div class="lab-grid">
+          <div class="controls">
+            <div class="control">
+              <label for="tm-range"><span>Tm · 構造転移の中点</span><output id="tm-output">70°C</output></label>
+              <input id="tm-range" type="range" min="50" max="85" value="70" step="1">
+              <div class="control-note">DSC / DSF / nanoDSFなどが捉える熱転移の代表値</div>
+            </div>
+            <div class="control">
+              <label for="tagg-range"><span>Tagg · 凝集シグナル開始</span><output id="tagg-output">64°C</output></label>
+              <input id="tagg-range" type="range" min="45" max="85" value="64" step="1">
+              <div class="control-note">DLS / 静的光散乱などで粒径・散乱が増え始める温度</div>
+            </div>
+            <div class="lab-conclusion" id="chart-interpretation" aria-live="polite">この模式例ではTaggがTmより先です。観測可能な会合が、熱転移の中点より低温側で立ち上がっています。</div>
+          </div>
+
+          <figure class="canvas-shell">
+            <canvas id="stability-chart" role="img" aria-label="温度に対する構造転移シグナルと凝集シグナルの模式グラフ"></canvas>
+            <figcaption>正規化した模式シグナル。実データ・特定の抗体を表すものではありません。</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="metric-pair">
+        <article class="metric tm">
+          <small>STRUCTURE</small>
+          <h3>Tm — 熱転移の中点</h3>
+          <p>単純な二状態モデルでは、天然状態Nと変性状態Uの存在量が等しくなる温度。IgGでは複数ドメインの転移が重なり、複数ピークになることがあります。</p>
+        </article>
+        <article class="metric tagg">
+          <small>ASSOCIATION</small>
+          <h3>Tagg — 凝集シグナルの開始</h3>
+          <p>光散乱などで粒径または散乱強度が増え始める温度。閾値、試料濃度、装置、解析法に依存し、Tmと同じ現象の別名ではありません。</p>
+        </article>
+      </div>
+
+      <p class="context-note"><strong>apparent Tmに注意：</strong>抗体の熱変性が凝集と結びついて不可逆になると、加熱速度によって見かけのTmが動くことがあります。その値は純粋な平衡熱力学量ではなく、測定条件を含む指標として読みます。</p>
+    </section>
+
+    <section class="section" id="methods" aria-labelledby="methods-title">
+      <div class="section-heading">
+        <p class="section-kicker" data-number="4">Measurement toolkit</p>
+        <h2 id="methods-title">一つの測定では、<br>すべてを見られない</h2>
+      </div>
+      <p class="section-intro">測定法ごとに観察対象と見落としやすい領域が違います。ボタンを選び、各手法が何を見ているか比較してください。</p>
+
+      <div class="method-grid" role="tablist" aria-label="測定法を選択">
+        <button class="method-button" role="tab" aria-selected="true" aria-controls="method-panel" data-method="dsc"><strong>DSC</strong><span>熱容量</span></button>
+        <button class="method-button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="dsf"><strong>DSF</strong><span>蛍光変化</span></button>
+        <button class="method-button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="dls"><strong>DLS</strong><span>粒径分布</span></button>
+        <button class="method-button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="sec"><strong>SEC</strong><span>可溶性分子種</span></button>
+        <button class="method-button" role="tab" aria-selected="false" aria-controls="method-panel" data-method="particles"><strong>粒子法</strong><span>大きな粒子</span></button>
+      </div>
+
+      <div class="method-panel" id="method-panel" role="tabpanel" tabindex="0">
+        <div class="method-visual" id="method-visual" data-mark="DSC" aria-hidden="true"></div>
+        <div class="method-copy">
+          <span class="overline" id="method-overline">STRUCTURAL TRANSITION</span>
+          <h3 id="method-name">示差走査熱量測定</h3>
+          <p id="method-description">温度上昇に伴う過剰熱容量を測り、ピーク付近からTmを求めます。IgGではFab、CH2、CH3などの寄与が重なり、複数転移として見える場合があります。</p>
+          <div class="method-facts">
+            <div><strong>主に見るもの</strong><span id="method-sees">熱による構造転移</span></div>
+            <div><strong>読むときの注意</strong><span id="method-caution">ピーク割当、可逆性、加熱速度</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="comparison-wrap">
+        <table>
+          <thead>
+            <tr><th>評価したい性質</th><th>代表的な指標・手法</th><th>主に見ているもの</th><th>読むときの注意</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>構造安定性</td><td>Tm / Tonset、DSC・DSF・nanoDSF</td><td>熱による構造転移</td><td>測定条件、ピーク数、可逆性</td></tr>
+            <tr><td>凝集開始</td><td>Tagg、DLS・静的光散乱</td><td>粒径・散乱強度の増加</td><td>濃度と検出閾値に依存</td></tr>
+            <tr><td>可溶性凝集体</td><td>SEC</td><td>単量体・可溶性高分子種</td><td>大粒子やカラム相互作用に注意</td></tr>
+            <tr><td>粒子</td><td>光遮蔽・画像法</td><td>サブビジブル〜可視粒子</td><td>手法ごとにサイズ範囲が異なる</td></tr>
+            <tr><td>機能安定性</td><td>結合・細胞アッセイ</td><td>保存後の結合・生物活性</td><td>構造保持と機能保持は同義でない</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="context-note"><strong>SEC単独で「凝集なし」と言わない：</strong>カラムに入らない大粒子や、前処理中に失われた粒子を十分に捉えられない場合があります。異なる原理とサイズ範囲を持つ直交的測定で補います。</p>
+    </section>
+
+    <section class="section" aria-labelledby="definition-title">
+      <div class="section-heading">
+        <p class="section-kicker" data-number="5">Operational definition</p>
+        <h2 id="definition-title">「安定な抗体」を、<br>測れる言葉で定義する</h2>
+      </div>
+      <p class="section-intro">「安定」というラベルでは比較できません。試料・条件・時間・測定法・合格基準までを一つの文にします。</p>
+
+      <div class="definition-builder">
+        <div class="definition-formula">
+          <h3>安定性の7要素</h3>
+          <div class="formula-stack">
+            <div class="formula-item"><span>1</span><span>試料・抗体フォーマット</span></div>
+            <div class="formula-item"><span>2</span><span>製剤組成・pH</span></div>
+            <div class="formula-item"><span>3</span><span>タンパク質濃度</span></div>
+            <div class="formula-item"><span>4</span><span>ストレスの種類と強度</span></div>
+            <div class="formula-item"><span>5</span><span>保存・保持時間</span></div>
+            <div class="formula-item"><span>6</span><span>測定法と観測対象</span></div>
+            <div class="formula-item"><span>7</span><span>許容基準</span></div>
+          </div>
+        </div>
+
+        <div class="definition-example">
+          <span class="overline">EXAMPLE · 候補選択の定義例</span>
+          <blockquote>「製剤候補A中、予定濃度で、凍結融解3回と40°C・2週間後にも、SEC単量体率、サブビジブル粒子数、結合活性があらかじめ定めた基準内にある」</blockquote>
+          <div class="evidence-chips" aria-label="追加する相補的指標">
+            <span>DSC / nanoDSFのTm</span><span>DLSのTagg</span><span>化学修飾量</span><span>実時間保存</span><span>機能アッセイ</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="reading-title">
+      <div class="section-heading">
+        <p class="section-kicker" data-number="6">Paper reading</p>
+        <h2 id="reading-title">論文の “increased stability” を<br>そのまま読まない</h2>
+      </div>
+      <div class="reading-grid">
+        <article class="reading-card"><h3>指標を特定</h3><p>Tm、単量体率、粒子数、残存活性のどれが増減したのか。</p></article>
+        <article class="reading-card"><h3>条件をそろえる</h3><p>フォーマット、濃度、pH、添加剤、加熱速度、保持時間は同じか。</p></article>
+        <article class="reading-card"><h3>ピークを読む</h3><p>平衡的Tmかapparent Tmか。Tm1かFab転移か。割当の根拠はあるか。</p></article>
+        <article class="reading-card"><h3>直交的に確かめる</h3><p>SECだけでなく、粒子法や保存後の機能測定も行われているか。</p></article>
+        <article class="reading-card"><h3>時間軸を疑う</h3><p>加速試験の順位を、そのまま実時間保存の有効期間へ外挿していないか。</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="ai" aria-labelledby="ai-title">
+      <div class="ai-shell">
+        <div class="ai-copy">
+          <p class="section-kicker" data-number="7">Antibody × AI</p>
+          <h2 id="ai-title">予測モデルでは、<br>ラベルの意味を混ぜない</h2>
+          <p>Tm、Tagg、加速保存後の% monomerは別の生物物理現象です。配列だけでなく、値を生んだassayの来歴を一緒に持たせる必要があります。</p>
+        </div>
+        <div class="ai-schema">
+          <dl>
+            <div class="schema-row"><dt>target</dt><dd>Tm / Tagg / % monomer / binding activityを別ラベルとして明示</dd></div>
+            <div class="schema-row"><dt>molecule</dt><dd>配列、抗体フォーマット、アイソタイプ、ドメインまたはピーク割当</dd></div>
+            <div class="schema-row"><dt>formulation</dt><dd>pH、添加剤、塩、濃度、容器などの製剤条件</dd></div>
+            <div class="schema-row"><dt>assay</dt><dd>装置、測定原理、加熱速度、解析法、検出限界</dd></div>
+            <div class="schema-row"><dt>time / stress</dt><dd>保存温度、期間、凍結融解回数、撹拌などの履歴</dd></div>
+          </dl>
+          <div class="ai-warning"><strong>リークに注意：</strong>近縁CDR配列だけでなく、同一抗体を異なる製剤で測った反復がtrain/testへ分かれると、配列を介して試験条件の答えが漏れる可能性があります。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="terms-title">
+      <div class="section-heading">
+        <p class="section-kicker" data-number="8">Key terms</p>
+        <h2 id="terms-title">重要用語</h2>
+      </div>
+      <dl class="glossary">
+        <div class="term"><dt>変性</dt><dd>天然状態の高次構造と機能を失う過程。</dd></div>
+        <div class="term"><dt>部分変性状態</dt><dd>完全展開前に構造の一部が崩れ、疎水面などが露出した状態。</dd></div>
+        <div class="term"><dt>凝集</dt><dd>複数のタンパク質分子が会合して高分子種や粒子を作る現象。</dd></div>
+        <div class="term"><dt>Tm</dt><dd>観測した熱転移の中点温度。</dd></div>
+        <div class="term"><dt>Tagg</dt><dd>所定の測定法で凝集シグナルが立ち上がる温度。</dd></div>
+        <div class="term"><dt>DSC</dt><dd>熱容量変化から熱転移を測る示差走査熱量測定。</dd></div>
+        <div class="term"><dt>SEC</dt><dd>溶液中の主に可溶性分子種を大きさで分離する方法。</dd></div>
+        <div class="term"><dt>直交的測定</dt><dd>異なる原理の手法を組み合わせ、互いの見落としを補う評価。</dd></div>
+      </dl>
+    </section>
+
+    <section class="section" id="quiz" aria-labelledby="quiz-title">
+      <div class="section-heading">
+        <p class="section-kicker" data-number="9">Knowledge check</p>
+        <h2 id="quiz-title">理解確認問題</h2>
+      </div>
+      <p class="section-intro">まず自分の言葉で答えてから、カードを開いて模範回答を確認してください。</p>
+      <div class="quiz-grid">
+        <details class="quiz">
+          <summary><span class="quiz-number">Q1</span><strong>候補抗体AのTmが候補Bより5°C高い。Aの方が長期保存で凝集しにくいと結論できない理由を二つ挙げてください。</strong></summary>
+          <div class="quiz-answer"><strong>模範回答：</strong> Tmは特定条件で測った構造転移の中点であり、凝集速度そのものではありません。また凝集は濃度、製剤、界面、時間などにも依存するため、同条件の保存試験と凝集測定が必要です。</div>
+        </details>
+        <details class="quiz">
+          <summary><span class="quiz-number">Q2</span><strong>加熱後のSECで単量体98%だったとき、追加すべき測定を一つ挙げ、その理由を説明してください。</strong></summary>
+          <div class="quiz-answer"><strong>模範回答：</strong> 例えば光遮蔽法または画像法でサブビジブル粒子を測ります。SECではカラムに入らない大粒子や失われた粒子を十分に捉えられず、「凝集なし」を単独では保証できないからです。</div>
+        </details>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="takeaway-title">
+      <div class="takeaway">
+        <h2 id="takeaway-title">今日の3行要約</h2>
+        <div class="three-lines">
+          <div><span>01</span>安定性は一語の性質ではなく、構造・コロイド・化学・機能を条件付きで評価する概念。</div>
+          <div><span>02</span>Tmは熱転移の中点、Taggは凝集シグナルの開始。高Tmだけでは長期保存安定性を保証しない。</div>
+          <div><span>03</span>複数原理の測定と、実際の製剤・濃度・時間に近い保存試験を組み合わせて判断する。</div>
+        </div>
+        <div class="open-question">
+          <small>OPEN QUESTION · 未解決の疑問</small>
+          <p>Tm、Tagg、加速保存後の単量体率を統合するとき、抗体フォーマットや製剤ごとにどの重みで候補順位を決めるのが最も妥当だろうか？</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="references-title">
+      <div class="section-heading">
+        <p class="section-kicker" data-number="10">References</p>
+        <h2 id="references-title">参考文献</h2>
+      </div>
+      <ol class="references">
+        <li>ICH. <em>Q5C: Stability Testing of Biotechnological/Biological Products.</em> <a href="https://database.ich.org/sites/default/files/Q5C_Guideline.pdf" target="_blank" rel="noopener noreferrer">公式ガイドライン</a></li>
+        <li>Wang W. Protein aggregation and its inhibition in biopharmaceutics. <em>Int J Pharm.</em> 2005;289:1–30. <a href="https://doi.org/10.1016/j.ijpharm.2004.11.014" target="_blank" rel="noopener noreferrer">doi:10.1016/j.ijpharm.2004.11.014</a></li>
+        <li>Wang W, Singh S, Zeng DL, King K, Nema S. Antibody structure, instability, and formulation. <em>J Pharm Sci.</em> 2007;96:1–26. <a href="https://doi.org/10.1002/jps.20727" target="_blank" rel="noopener noreferrer">doi:10.1002/jps.20727</a></li>
+        <li>Ionescu RM, Vlasak J, Price C, Kirchmeier M. Contribution of variable domains to the stability of humanized IgG1 monoclonal antibodies. <em>J Pharm Sci.</em> 2008;97:1414–1426. <a href="https://doi.org/10.1002/jps.21104" target="_blank" rel="noopener noreferrer">doi:10.1002/jps.21104</a></li>
+        <li>Philo JS. A critical review of methods for size characterization of non-particulate protein aggregates. <em>Curr Pharm Biotechnol.</em> 2009;10:359–372. <a href="https://doi.org/10.2174/138920109788488815" target="_blank" rel="noopener noreferrer">doi:10.2174/138920109788488815</a></li>
+        <li>Jain T, et al. Biophysical properties of the clinical-stage antibody landscape. <em>PNAS.</em> 2017;114:944–949. <a href="https://doi.org/10.1073/pnas.1616408114" target="_blank" rel="noopener noreferrer">doi:10.1073/pnas.1616408114</a></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Antibody Engineering 90-Day Learning Project · Day 006 · 元レポート：<a href="../../01_daily_reports/Day_006_%E5%A4%89%E6%80%A7%E3%83%BBTm%E3%83%BB%E5%87%9D%E9%9B%86.md">Markdown版</a></p>
+  </footer>
+
+  <button class="back-to-top" id="back-to-top" type="button" aria-label="ページ上部へ戻る">↑</button>
+
+  <script>
+    (() => {
+      const progressBar = document.getElementById('progress-bar');
+      const backToTop = document.getElementById('back-to-top');
+
+      const updateScrollUI = () => {
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        const ratio = scrollable > 0 ? window.scrollY / scrollable : 0;
+        progressBar.style.width = `${Math.min(100, Math.max(0, ratio * 100))}%`;
+        backToTop.classList.toggle('visible', window.scrollY > 700);
+      };
+
+      window.addEventListener('scroll', updateScrollUI, { passive: true });
+      backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      updateScrollUI();
+
+      const methods = {
+        dsc: {
+          mark: 'DSC',
+          overline: 'STRUCTURAL TRANSITION',
+          name: '示差走査熱量測定',
+          description: '温度上昇に伴う過剰熱容量を測り、ピーク付近からTmを求めます。IgGではFab、CH2、CH3などの寄与が重なり、複数転移として見える場合があります。',
+          sees: '熱による構造転移',
+          caution: 'ピーク割当、可逆性、加熱速度'
+        },
+        dsf: {
+          mark: 'DSF',
+          overline: 'FLUORESCENCE',
+          name: 'DSF / nanoDSF',
+          description: 'DSFは疎水面の露出に応じた外因性色素の蛍光変化、nanoDSFは主にTrpなどの内因性蛍光変化を追います。測る物理量が異なるため、DSCと値がずれることがあります。',
+          sees: '疎水面露出・内因性蛍光変化',
+          caution: '色素干渉、試料組成、転移の割当'
+        },
+        dls: {
+          mark: 'DLS',
+          overline: 'HYDRODYNAMIC SIZE',
+          name: '動的光散乱',
+          description: '溶液中の粒子による散乱光の揺らぎから、流体力学的サイズ分布を推定します。大きい粒子の散乱寄与が強いため、少量の凝集体にも敏感です。',
+          sees: '粒径分布・凝集シグナル',
+          caution: '濃度、粘度、ダスト、大粒子への偏り'
+        },
+        sec: {
+          mark: 'SEC',
+          overline: 'SOLUBLE SPECIES',
+          name: 'サイズ排除クロマトグラフィー',
+          description: '溶液中の主に可溶性分子種をサイズで分離し、単量体や高分子量種を定量します。一方、カラムに入らない大粒子や回収されない種は見落とす可能性があります。',
+          sees: '単量体・可溶性高分子種',
+          caution: '回収率、希釈、カラム相互作用、大粒子'
+        },
+        particles: {
+          mark: 'µm',
+          overline: 'SUBVISIBLE PARTICLES',
+          name: '光遮蔽法・画像法',
+          description: 'SECより大きいサブビジブル〜可視粒子を数え、サイズ別に評価します。方法によって検出できる粒径、形状情報、透明粒子への感度が異なります。',
+          sees: '比較的大きな粒子の数とサイズ',
+          caution: '検出範囲、粒子形状、気泡との識別'
+        }
+      };
+
+      const buttons = Array.from(document.querySelectorAll('.method-button'));
+      const methodVisual = document.getElementById('method-visual');
+      const methodOverline = document.getElementById('method-overline');
+      const methodName = document.getElementById('method-name');
+      const methodDescription = document.getElementById('method-description');
+      const methodSees = document.getElementById('method-sees');
+      const methodCaution = document.getElementById('method-caution');
+
+      const selectMethod = (key) => {
+        const method = methods[key];
+        if (!method) return;
+        buttons.forEach((button) => button.setAttribute('aria-selected', String(button.dataset.method === key)));
+        methodVisual.dataset.mark = method.mark;
+        methodOverline.textContent = method.overline;
+        methodName.textContent = method.name;
+        methodDescription.textContent = method.description;
+        methodSees.textContent = method.sees;
+        methodCaution.textContent = method.caution;
+      };
+
+      buttons.forEach((button, index) => {
+        button.addEventListener('click', () => selectMethod(button.dataset.method));
+        button.addEventListener('keydown', (event) => {
+          if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+          event.preventDefault();
+          const delta = event.key === 'ArrowRight' ? 1 : -1;
+          const next = (index + delta + buttons.length) % buttons.length;
+          buttons[next].focus();
+          selectMethod(buttons[next].dataset.method);
+        });
+      });
+
+      const canvas = document.getElementById('stability-chart');
+      const context = canvas.getContext('2d');
+      const tmRange = document.getElementById('tm-range');
+      const taggRange = document.getElementById('tagg-range');
+      const tmOutput = document.getElementById('tm-output');
+      const taggOutput = document.getElementById('tagg-output');
+      const interpretation = document.getElementById('chart-interpretation');
+
+      const drawChart = () => {
+        const rect = canvas.getBoundingClientRect();
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(rect.width * ratio);
+        canvas.height = Math.round(rect.height * ratio);
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+        const width = rect.width;
+        const height = rect.height;
+        const pad = { left: width < 520 ? 45 : 62, right: 24, top: 36, bottom: 55 };
+        const plotW = width - pad.left - pad.right;
+        const plotH = height - pad.top - pad.bottom;
+        const tm = Number(tmRange.value);
+        const tagg = Number(taggRange.value);
+        const minT = 35;
+        const maxT = 90;
+        const x = (temperature) => pad.left + ((temperature - minT) / (maxT - minT)) * plotW;
+        const y = (value) => pad.top + plotH - value * plotH;
+
+        context.clearRect(0, 0, width, height);
+        context.fillStyle = '#fdfcf8';
+        context.fillRect(0, 0, width, height);
+
+        context.strokeStyle = '#e2ded3';
+        context.lineWidth = 1;
+        context.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
+        context.textAlign = 'center';
+        context.textBaseline = 'top';
+        context.fillStyle = '#627d98';
+
+        for (let temperature = 40; temperature <= 90; temperature += 10) {
+          const xpos = x(temperature);
+          context.beginPath();
+          context.moveTo(xpos, pad.top);
+          context.lineTo(xpos, pad.top + plotH);
+          context.stroke();
+          context.fillText(`${temperature}°`, xpos, pad.top + plotH + 10);
+        }
+
+        [0, 0.5, 1].forEach((value) => {
+          const ypos = y(value);
+          context.beginPath();
+          context.moveTo(pad.left, ypos);
+          context.lineTo(pad.left + plotW, ypos);
+          context.stroke();
+        });
+
+        context.strokeStyle = '#9fb3c8';
+        context.lineWidth = 1.5;
+        context.beginPath();
+        context.moveTo(pad.left, pad.top);
+        context.lineTo(pad.left, pad.top + plotH);
+        context.lineTo(pad.left + plotW, pad.top + plotH);
+        context.stroke();
+
+        const sigmoid = (temperature, midpoint, slope) => 1 / (1 + Math.exp(-(temperature - midpoint) / slope));
+        const gaussian = (temperature, midpoint, spread) => Math.exp(-0.5 * Math.pow((temperature - midpoint) / spread, 2));
+
+        const drawCurve = (color, lineWidth, valueAt) => {
+          context.strokeStyle = color;
+          context.lineWidth = lineWidth;
+          context.lineCap = 'round';
+          context.lineJoin = 'round';
+          context.beginPath();
+          for (let temperature = minT; temperature <= maxT; temperature += 0.25) {
+            const xpos = x(temperature);
+            const ypos = y(valueAt(temperature));
+            if (temperature === minT) context.moveTo(xpos, ypos);
+            else context.lineTo(xpos, ypos);
+          }
+          context.stroke();
+        };
+
+        drawCurve('#087e8b', 3.2, (temperature) => gaussian(temperature, tm, 5.3) * 0.9);
+        drawCurve('#e56b5d', 3.2, (temperature) => sigmoid(temperature, tagg + 4, 2.6) * 0.82);
+
+        const marker = (temperature, color, label) => {
+          const xpos = x(temperature);
+          context.save();
+          context.setLineDash([5, 5]);
+          context.strokeStyle = color;
+          context.lineWidth = 1.4;
+          context.beginPath();
+          context.moveTo(xpos, pad.top);
+          context.lineTo(xpos, pad.top + plotH);
+          context.stroke();
+          context.restore();
+          context.fillStyle = color;
+          context.font = '700 12px -apple-system, BlinkMacSystemFont, sans-serif';
+          context.textAlign = 'center';
+          context.fillText(label, xpos, 11);
+        };
+
+        marker(tm, '#087e8b', `Tm ${tm}°C`);
+        marker(tagg, '#e56b5d', `Tagg ${tagg}°C`);
+
+        context.font = '700 11px -apple-system, BlinkMacSystemFont, sans-serif';
+        context.textAlign = 'left';
+        context.fillStyle = '#087e8b';
+        context.fillText('● 構造転移（DSC模式）', pad.left + 4, pad.top + 10);
+        context.fillStyle = '#e56b5d';
+        context.fillText('● 凝集シグナル（光散乱模式）', pad.left + 4, pad.top + 29);
+
+        context.fillStyle = '#627d98';
+        context.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
+        context.textAlign = 'right';
+        context.fillText('温度', pad.left + plotW, pad.top + plotH + 31);
+        context.save();
+        context.translate(16, pad.top + plotH / 2);
+        context.rotate(-Math.PI / 2);
+        context.textAlign = 'center';
+        context.fillText('正規化シグナル', 0, 0);
+        context.restore();
+
+        tmOutput.value = `${tm}°C`;
+        taggOutput.value = `${tagg}°C`;
+        if (tagg < tm) {
+          interpretation.textContent = 'この模式例ではTaggがTmより先です。観測可能な会合が、熱転移の中点より低温側で立ち上がっています。';
+        } else if (tagg > tm) {
+          interpretation.textContent = 'この模式例ではTmがTaggより先です。構造転移が進んだ後に、観測可能な凝集シグナルが立ち上がっています。';
+        } else {
+          interpretation.textContent = 'この模式例ではTmとTaggが同じ温度です。ただし一致しても、2つの指標が同じ物理現象になるわけではありません。';
+        }
+      };
+
+      tmRange.addEventListener('input', drawChart);
+      taggRange.addEventListener('input', drawChart);
+
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(drawChart, 100);
+      });
+
+      drawChart();
+    })();
+  </script>
+</body>
+</html>
