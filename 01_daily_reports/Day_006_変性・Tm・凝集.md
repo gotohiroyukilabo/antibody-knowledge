@@ -2,7 +2,7 @@
 day: 6
 topic: 変性・Tm・凝集――「安定な抗体」をどう定義するか
 created: 2026-08-26
-status: unread
+status: read
 ---
 
 # Day 006：変性・Tm・凝集
