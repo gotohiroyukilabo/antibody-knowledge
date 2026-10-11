@@ -2,7 +2,7 @@
 day: 15
 topic: IgGの全体構造――重鎖・軽鎖・Fab・Fc・ヒンジ
 created: 2026-09-04
-status: unread
+status: read
 ---
 
 # Day 015：IgGの全体構造
