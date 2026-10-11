@@ -2,7 +2,7 @@
 day: 18
 topic: CDRとframework――抗原結合部位を支える構造
 created: 2026-09-07
-status: unread
+status: read
 ---
 
 # Day 018：CDRとframework
@@ -16,6 +16,10 @@ status: unread
 ### 1. 1本の可変ドメインはCDRとframeworkが交互に並ぶ
 
 重鎖可変ドメインVHと軽鎖可変ドメインVLは、いずれも`FR1–CDR1–FR2–CDR2–FR3–CDR3–FR4`という順序で記述される。CDR（complementarity-determining region）は各鎖3本、VHとVLを合わせて6本ある。これらのループが可変ドメインの一端に集まり、抗原に向き合う面の中心をつくる。framework region（FR）はその間を埋める4領域で、免疫グロブリンフォールドのβシート骨格を構成する。つまり、CDRとFRは別々のドメインではなく、同じVドメイン内で交互につながる配列区分である。[Chiu et al., 2019](https://doi.org/10.3390/antib8040055)
+
+![1本の可変ドメインの一次配列と折りたたみ：FR1–CDR1–FR2–CDR2–FR3–CDR3–FR4が同じ鎖上に並び、3本のCDRが立体構造の一端に集まる](../03_images/Day_018_CDR_framework_sequence_fold.png)
+
+**図：配列上の並びと立体構造の対応。** 上段は1本の可変ドメインの配列区分、下段は折りたたまれた構造の模式図。青のFRとオレンジのCDRは同じポリペプチド鎖の一部であり、折りたたみによって3本のCDRが一端に集まる。IMGT定義では、FR1はA・B、FR2はC・C′、FR3はC″・D・E・F、FR4はGのβストランドに対応する。CDR1はB–C、CDR2はC′–C″、CDR3はF–Gをつなぐループである。FRには隣接するターン・ループも含まれ、FR1〜FR4がそれぞれ1本のβストランドに対応するわけではない。区間長や立体配置は概念的に描いている。[IMGT Education：V-DOMAINのストランドとFR/CDRの対応](https://www.imgt.org/IMGTeducation/Tutorials/3Dstructure/_UK/DOMAINs/fleches.html)
 
 「CDR＝結合、FR＝無関係な土台」という二分法は便利だが不完全である。多くの抗原接触残基はCDRにある一方、CDR外から抗原に直接触れる残基もある。またFRは、CDRループの根元を固定し、VHとVLの相対的な向きを定め、結合面の形と運動性へ間接的に影響する。したがってパラトープは、6本のCDRを中心としつつ、必要に応じて周辺FR残基まで含む三次元的な表面として捉えるのがよい。[Sela-Culang et al., 2013](https://doi.org/10.3389/fimmu.2013.00302)
 
@@ -42,6 +46,10 @@ FRの主な役割はVドメインのβサンドイッチを保つことである
 CDR graftingは、非ヒト抗体のCDRをヒト抗体由来FRへ移植して、抗原結合をなるべく保ちながらヒト化する方法である。1980年代の実験は、超可変ループを移すことで抗原結合活性を移植できることを示した。[Riechmann et al., 1988](https://doi.org/10.1038/332323a0) しかし、移植先FRがCDRの形やVH–VL配向を十分に再現しなければaffinityが低下する。このとき、CDRを支えるドナー側FR残基を戻すback mutationが検討される。
 
 設計では、まずドナーとアクセプターの番号付けをそろえ、CDRに直接接するFR、VH–VL界面、埋もれたコア、抗原接触の可能性があるFRを構造上で確認する。そのうえで、親抗体、単純CDR graft、back mutation候補を同じformatで発現させ、発現量、単分散性、熱安定性、`KD`・`kon`・`koff`、必要なら細胞機能を比較する。結合だけ回復しても不安定なら、良い設計とは言えない。
+
+![CDR graftingとback mutation：マウスCDRをヒトFRへ移植し、必要なFR残基だけをマウス型に戻して親和性の維持・回復を目指す](../03_images/Day_018_CDR_grafting_back_mutation.png)
+
+**図：CDR graftingとback mutationによるヒト化の概念。** VH・VLの可変ドメインのみを示す模式図で、オレンジはマウス由来、青はヒト由来、灰色は抗原を表す。ヒト化は免疫原性リスクの低減を目指し、back mutationは必要なFR残基を親抗体型へ戻して結合機能の維持・回復を目指す。CDR graftingだけで親和性を保てる場合もあり、back mutationは必須ではない。最終的な親和性と免疫原性は実験で評価する。
 
 ### 6. 読解では「領域ラベル」から実際の残基と証拠へ降りる
 
